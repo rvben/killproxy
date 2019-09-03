@@ -1,16 +1,30 @@
-SHELL := /bin/bash
+SHELL:=/bin/bash
+IMAGE?=rvben/killproxy:dev
 
-build:
-	docker build -t rvben/killproxy:dev .
+run.sh:
+	wget https://raw.githubusercontent.com/monokal/docker-tinyproxy/master/run.sh
+	sed -i 's/sbin/bin/g' run.sh
+
+build: run.sh
+	docker build -t ${IMAGE} .
 
 run: build
-	docker run -d --cap-add=NET_ADMIN --net=host killproxy 192.168.1.182 8888
+	docker run -d --rm --name killproxy-run --cap-add=NET_ADMIN --net=host ${IMAGE} 10.10.10.10 8888
+
+run-interactive: build
+	docker run -ti --rm --name killproxy-run --cap-add=NET_ADMIN --net=host ${IMAGE} 10.10.10.10 8888
+
+exec:
+	docker run -ti --rm ${IMAGE}
+
+push-dev:
+	docker push ${IMAGE}
 
 push:
-	docker push rvben/killproxy:dev
+	docker tag ${IMAGE} rvben/killproxy:latest
+	docker push rvben/killproxy:latest
 
 cleantest:
-	iptables-save | grep -v KILLPROXY | iptables-restore
 	@docker stop alpine-test || true
 	@docker stop tinyproxy-test || true
 	@docker stop killproxy-test || true
