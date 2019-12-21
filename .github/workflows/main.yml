@@ -35,4 +35,4 @@ jobs:
           sed -i 's/sbin/bin/g' run.sh && \
           docker buildx build \
             --platform linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x \
-            -t rvben/killproxy:latest --push .
+            --output "type=image,push=true" -t rvben/killproxy:latest .
