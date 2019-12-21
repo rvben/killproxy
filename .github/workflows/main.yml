@@ -13,12 +13,6 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v1
-      - 
-        name: Docker login
-        uses: azure/docker-login@v1
-        with:
-          username: 'rvben'
-          password: ${{ secrets.DOCKER_PASS }}
       -
         name: Set up Docker Buildx
         id: buildx
@@ -28,6 +22,10 @@ jobs:
       -
         name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
+      -
+         name: Docker login
+         run: |
+           docker login --username rvben --password ${{ secrets.DOCKER_PASS }}
       -
          name: Get run.sh
          run: |
